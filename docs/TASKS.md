@@ -2992,3 +2992,37 @@ Registrar: URL do repositório GitHub, branch principal, data do push, checklist
 - `npm run tauri -- build`
 - `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug`
 - `npm run android:emulator:build`
+
+---
+
+## TAREFA 47 — [Concluido] Seletor de microfone no JARVIS Voice
+
+**Contexto:** O Windows continuava sem ouvir o Matheus porque o app não permitia selecionar explicitamente o microfone. O usuário também quer a mesma opção no Android para usar fone Bluetooth ou outro dispositivo externo quando disponível.
+
+**Resultado:**
+
+- Backend `jarvis-voice` ganhou endpoint `GET /audio/devices`, listando dispositivos de entrada do `sounddevice` e marcando compatibilidade com `16 kHz/int16`.
+- Endpoint WebSocket `/service` passou a aceitar `?inputDevice=<id>` para sobrescrever o `VOICE_INPUT_DEVICE` sem editar `.env`.
+- Sidebar do app ganhou opção `Microfone` e botão `Atualizar microfones`, mantendo a tela inicial limpa.
+- Desktop/serviço salva a escolha em `jarvisVoiceServiceMicrophone`; Android/app mode salva em `jarvisVoiceAppMicrophone`.
+- Android/app mode usa `deviceId` no `getUserMedia` quando um microfone específico é selecionado.
+- Versão do app elevada para `0.1.5`.
+- Gerados e instalados os builds Windows `0.1.5`:
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64_en-US.msi`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64-setup.exe`
+
+**Validações:**
+
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- `GET /audio/devices` respondeu e listou microfones compatíveis; no momento do teste apareceram `Microfone (M8)` e Realtek, mas nenhum dispositivo com nome `DB`.
+- `npm run build`
+- Playwright Chromium confirmou que o seletor de microfone aparece na sidebar.
+- `cargo check`
+- `npm run tauri -- build`
+- Instalado `JARVIS Voice 0.1.5` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.5`.
+
+**Bloqueio Android:**
+
+- `npm run tauri -- android build --apk --target aarch64` compilou a lib ARM64, mas falhou ao criar symlink em `jniLibs` porque o Windows está sem Developer Mode/permissão de symlink.
+- Foi copiada manualmente a `.so` ARM64, mas `gradlew assembleArm64Release` aciona novamente a task Rust do Tauri e falha pela ausência do arquivo temporário `com.matheus.jarvis.voice-server-addr`.
+- Próximo passo para APK Android `0.1.5`: habilitar Developer Mode no Windows ou ajustar o fluxo Gradle para empacotar sem executar `rustBuildArm64Release`.

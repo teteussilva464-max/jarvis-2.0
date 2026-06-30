@@ -256,3 +256,11 @@ Pendentes por falha do instalador/registry: `proactive-agent`, `ui-ux-pro-max`, 
 **Motivo:** O backend desktop usa `sounddevice` e OpenWakeWord em `16 kHz/int16`. O microfone padrão do Windows pode captar pouco sinal ou nem abrir nesse formato, mesmo aparecendo como dispositivo válido. Isso fez o app desktop ficar em standby e não reconhecer `hey jarvis`.
 
 **Decisão:** O backend `jarvis-voice` passa a aceitar `VOICE_INPUT_DEVICE` no `.env`, por índice ou nome. No ambiente atual, o dispositivo compatível escolhido foi `VOICE_INPUT_DEVICE=5` (`Driver de captura de som primário`). Diagnóstico deve ser feito com `scripts/diagnose_microphone.py`; calibração da wake word com `scripts/test_wake_word.py`.
+
+---
+
+## Seletor de microfone no JARVIS Voice
+
+**Motivo:** Configurar o microfone apenas por `.env` é frágil: o usuário pode trocar entre microfone interno, interface USB, dispositivo Bluetooth ou outro input sem querer editar arquivo e reiniciar manualmente. No Android, a escolha também precisa existir porque fones Bluetooth e acessórios externos podem aparecer como entradas diferentes.
+
+**Decisão:** A partir da versão `0.1.5`, o app mantém a tela inicial limpa e coloca a escolha de microfone na sidebar. No desktop/serviço, o backend expõe `GET /audio/devices` com os dispositivos `sounddevice` compatíveis com `16 kHz/int16`, e o WebSocket `/service` aceita `?inputDevice=<id>`. No Android/app mode, a escolha usa `navigator.mediaDevices.enumerateDevices()` e aplica `deviceId` em `getUserMedia`. As preferências ficam separadas: `jarvisVoiceServiceMicrophone` para backend Windows e `jarvisVoiceAppMicrophone` para captura do app.

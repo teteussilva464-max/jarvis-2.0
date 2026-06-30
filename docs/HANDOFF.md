@@ -53,6 +53,10 @@ IA responsável: Codex
 - Criados scripts `..\jarvis-voice\scripts\diagnose_microphone.py` e `..\jarvis-voice\scripts\test_wake_word.py`.
 - Android/app mode ficou mais sensível para fala e erros de microfone/permissão agora aparecem na tela principal.
 - Versão `0.1.4` gerada e instalada no Windows; APKs Android arm64/x86_64 atualizados.
+- TAREFA 47 concluída parcialmente para desktop: JARVIS Voice ganhou seletor de microfone na sidebar, endpoint `GET /audio/devices` e override `?inputDevice=` no `/service`.
+- Versão `0.1.5` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.5`.
+- `GET /audio/devices` listou dispositivos compatíveis como `Microfone (M8)` e Realtek; nenhum dispositivo com nome `DB` apareceu no Windows durante o teste.
+- Build Android `0.1.5` ficou bloqueado por falta de Developer Mode/permissão de symlink no Windows; a lib ARM64 compilou, mas o APK não fechou.
 
 ## Arquivos alterados
 
@@ -90,6 +94,8 @@ IA responsável: Codex
 - `..\jarvis-voice\scripts\test_wake_word.py`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.4_x64_en-US.msi`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.4_x64-setup.exe`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64_en-US.msi`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64-setup.exe`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -176,6 +182,15 @@ IA responsável: Codex
 - Instalado `JARVIS Voice 0.1.4` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.4`.
 - `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug` gerou APK arm64 `0.1.4`.
 - `npm run android:emulator:build` atualizou o APK x86_64 do emulador.
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- `venv\Scripts\python server.py` + `Invoke-RestMethod http://127.0.0.1:8765/audio/devices` confirmou endpoint de microfones.
+- `npm run build` em `jarvis-voice-app`.
+- Playwright Chromium validou seletor `#microphoneInput` e botão `#refreshMicrophonesButton` na sidebar.
+- `cargo check` em `jarvis-voice-app/src-tauri`.
+- `npm run tauri -- build` gerou instaladores Windows `0.1.5` usando `CARGO_TARGET_DIR=%LOCALAPPDATA%\Temp\jarvis-voice-tauri-target`.
+- Instalado `JARVIS Voice 0.1.5` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.5`.
+- `npm run tauri -- android build --apk --target aarch64` compilou Rust Android, mas falhou no symlink por falta de Developer Mode.
+- Workaround parcial: `.so` ARM64 copiada para `src-tauri\gen\android\app\src\main\jniLibs\arm64-v8a\`, mas `gradlew assembleArm64Release` disparou `rustBuildArm64Release` novamente e falhou por ausência de `com.matheus.jarvis.voice-server-addr`.
 
 ## Pendências
 
@@ -192,6 +207,7 @@ IA responsável: Codex
   - `New-NetFirewallRule -DisplayName "JARVIS Voice Backend 8765" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8765 -Profile Private`
 - Alternativa sem Firewall: com celular conectado por USB, rodar `adb reverse tcp:8765 tcp:8765` e trocar a URL no app para `ws://127.0.0.1:8765/service`.
 - Para `npm run tauri -- android build --apk` funcionar sem workaround, habilitar Developer Mode no Windows ou rodar terminal com privilégio de criar symlink
+- Gerar APK Android `0.1.5` após resolver o bloqueio de symlink/Gradle; o APK atual em `dist-installers\android\app-arm64-debug.apk` ainda é anterior ao seletor de microfone.
 - Assinar o APK Android antes de instalar/distribuir fora de teste local
 - Se ainda forem necessárias, reexecutar as skills `proactive-agent` e `evolver` em PowerShell elevado por causa do `EPERM`
 - Encontrar slugs válidos para `sequential-thinking` e `openclaw-soul-plugin`, ou remover essas intenções se o ClawHub atual não publicar pacotes compatíveis
