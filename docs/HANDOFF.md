@@ -57,6 +57,9 @@ IA responsável: Codex
 - Versão `0.1.5` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.5`.
 - `GET /audio/devices` listou dispositivos compatíveis como `Microfone (M8)` e Realtek; nenhum dispositivo com nome `DB` apareceu no Windows durante o teste.
 - Build Android `0.1.5` ficou bloqueado por falta de Developer Mode/permissão de symlink no Windows; a lib ARM64 compilou, mas o APK não fechou.
+- TAREFA 48 concluída: troca de microfone no select agora salva imediatamente e reinicia a conexão ativa para o backend abrir o novo dispositivo.
+- Versão `0.1.6` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.6`.
+- `scripts\test_wake_word.py` agora aceita `--device` para testar o microfone escolhido diretamente.
 
 ## Arquivos alterados
 
@@ -96,6 +99,8 @@ IA responsável: Codex
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.4_x64-setup.exe`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64_en-US.msi`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64-setup.exe`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64_en-US.msi`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64-setup.exe`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -191,6 +196,11 @@ IA responsável: Codex
 - Instalado `JARVIS Voice 0.1.5` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.5`.
 - `npm run tauri -- android build --apk --target aarch64` compilou Rust Android, mas falhou no symlink por falta de Developer Mode.
 - Workaround parcial: `.so` ARM64 copiada para `src-tauri\gen\android\app\src\main\jniLibs\arm64-v8a\`, mas `gradlew assembleArm64Release` disparou `rustBuildArm64Release` novamente e falhou por ausência de `com.matheus.jarvis.voice-server-addr`.
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- `npm run build` em `jarvis-voice-app`.
+- `cargo check` em `jarvis-voice-app/src-tauri`.
+- `npm run tauri -- build` gerou instaladores Windows `0.1.6`.
+- Instalado `JARVIS Voice 0.1.6` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.6`.
 
 ## Pendências
 
@@ -199,7 +209,7 @@ IA responsável: Codex
 - Testar manualmente wake word com microfone real no app instalado: abrir `JARVIS Voice`, clicar em "Iniciar Serviço" se necessário e falar "JARVIS".
 - Se `hey jarvis` ainda não detectar, rodar:
   - `cd "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice"`
-  - `.\venv\Scripts\python.exe scripts\test_wake_word.py --seconds 20`
+  - `.\venv\Scripts\python.exe scripts\test_wake_word.py --device 1 --seconds 20`  # troque 1 pelo microfone selecionado
   - Se o maior score ficar abaixo de `0.5`, reduzir `WAKE_WORD_THRESHOLD` no `.env`.
 - Instalar o APK debug no Android com o celular conectado por USB:
   - `adb install -r "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk"`

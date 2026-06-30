@@ -3026,3 +3026,33 @@ Registrar: URL do repositório GitHub, branch principal, data do push, checklist
 - `npm run tauri -- android build --apk --target aarch64` compilou a lib ARM64, mas falhou ao criar symlink em `jniLibs` porque o Windows está sem Developer Mode/permissão de symlink.
 - Foi copiada manualmente a `.so` ARM64, mas `gradlew assembleArm64Release` aciona novamente a task Rust do Tauri e falha pela ausência do arquivo temporário `com.matheus.jarvis.voice-server-addr`.
 - Próximo passo para APK Android `0.1.5`: habilitar Developer Mode no Windows ou ajustar o fluxo Gradle para empacotar sem executar `rustBuildArm64Release`.
+
+---
+
+## TAREFA 48 — [Concluido] Aplicar troca de microfone imediatamente
+
+**Contexto:** Após a TAREFA 47, a lista de microfones apareceu no app, mas trocar o valor no select não fazia o serviço ativo reabrir o microfone novo. O usuário tinha a impressão de que o JARVIS ficava esperando, porque o backend continuava preso no dispositivo anterior até salvar/reconectar.
+
+**Resultado:**
+
+- O select `Microfone` agora salva a escolha assim que o usuário troca a opção.
+- Se o WebSocket estiver conectado, o app reinicia a escuta automaticamente para o backend abrir o novo `inputDevice`.
+- O botão `Salvar` também reinicia a conexão quando o serviço já está ativo.
+- Script `scripts/test_wake_word.py` ganhou `--device`, permitindo testar um microfone específico:
+
+```powershell
+.\venv\Scripts\python.exe scripts\test_wake_word.py --device 1 --seconds 20
+```
+
+- Versão do app elevada para `0.1.6`.
+- Gerados e instalados os builds Windows `0.1.6`:
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64_en-US.msi`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64-setup.exe`
+
+**Validações:**
+
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- `npm run build`
+- `cargo check`
+- `npm run tauri -- build`
+- Instalado `JARVIS Voice 0.1.6` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.6`.
