@@ -11,7 +11,7 @@
 ## 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/SEU_USUARIO/jarvis-2.0.git
+git clone https://github.com/teteussilva464-max/jarvis-2.0.git
 cd jarvis-2.0
 ```
 

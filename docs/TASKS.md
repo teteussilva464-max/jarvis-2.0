@@ -2714,7 +2714,7 @@ Registrar: resultado do APK debug, resultado do checklist Windows, caminho exato
 
 ---
 
-## TAREFA 43 — [Em andamento] Subir o projeto no GitHub e documentar setup em nova máquina
+## TAREFA 43 — [Concluido] Subir o projeto no GitHub e documentar setup em nova máquina
 
 **Contexto:** JARVIS 2.0 roda em uma única máquina (Windows do Matheus). Para usar em outra máquina ou garantir backup/portabilidade, o projeto precisa estar no GitHub. O repositório deve conter tudo que é necessário para recriar o ambiente — exceto segredos (API keys, senhas de banco).
 

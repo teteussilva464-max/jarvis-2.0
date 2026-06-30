@@ -25,12 +25,15 @@ IA responsável: Codex
 - TAREFA 42 concluída: gerado APK Android debug assinado automaticamente pelo Gradle para teste local via ADB.
 - Backend de voz configurado para teste Android na LAN com `VOICE_HOST=0.0.0.0`; Windows está usando IP `192.168.0.31`.
 - APK debug gerado com URL padrão `ws://192.168.0.31:8765/service`, para conectar no backend Windows pela mesma rede Wi-Fi.
-- TAREFA 43 iniciada: projeto `Jarvis_2.0` preparado para GitHub/portabilidade.
+- TAREFA 43 concluída: projeto `Jarvis_2.0` publicado no GitHub privado.
 - `.gitignore` revisado para excluir `.env`, dependências, builds e logs, preservando `prisma/migrations/`.
 - `.env.example` atualizado com variáveis atuais do projeto, sem segredos reais.
 - `docs/SETUP.md` refeito com setup em nova máquina, Docker, Prisma, OpenClaw e JARVIS Voice.
 - Git inicializado localmente, branch renomeada para `main` e commit inicial criado.
-- GitHub CLI instalado via `winget`, mas criação/push do repositório remoto ficou bloqueada porque `gh` ainda não está autenticado.
+- GitHub CLI instalado via `winget`, autenticado e usado para criar/pushar o repositório privado.
+- Repositório GitHub: `https://github.com/teteussilva464-max/jarvis-2.0`
+- Branch principal: `main`
+- Verificado no GitHub: `.env` não está publicada; `prisma/migrations/`, `agent/jarvis.md` e `docs/SETUP.md` estão publicados.
 
 ## Arquivos alterados
 
@@ -107,7 +110,11 @@ IA responsável: Codex
 - `git commit -m "feat: JARVIS 2.0 — assistente pessoal autônomo (OpenClaw + API REST)"` criou o commit local `f20f108`.
 - `git branch -M main` definiu a branch principal local.
 - `winget install --id GitHub.cli -e --source winget --accept-package-agreements --accept-source-agreements` instalou `gh 2.95.0`.
-- `gh auth status` retornou que não há login GitHub ativo.
+- `gh auth status` confirmou login em `github.com` como `teteussilva464-max`.
+- `gh repo create jarvis-2.0 --private --source=. --remote=origin --push` criou o repo privado e fez push da branch `main`.
+- `gh repo view --json nameWithOwner,url,visibility,defaultBranchRef` confirmou `PRIVATE`, URL `https://github.com/teteussilva464-max/jarvis-2.0` e default branch `main`.
+- `gh api repos/teteussilva464-max/jarvis-2.0/contents/.env` retornou `404`, confirmando que `.env` não foi publicada.
+- `gh api` confirmou presença de `prisma/migrations/`, `agent/jarvis.md` e `docs/SETUP.md`.
 
 ## Pendências
 
@@ -124,11 +131,7 @@ IA responsável: Codex
 - Se ainda forem necessárias, reexecutar as skills `proactive-agent` e `evolver` em PowerShell elevado por causa do `EPERM`
 - Encontrar slugs válidos para `sequential-thinking` e `openclaw-soul-plugin`, ou remover essas intenções se o ClawHub atual não publicar pacotes compatíveis
 - Testar TuyaClaw com dispositivos Tuya Smart
-- Autenticar GitHub CLI e concluir push remoto da TAREFA 43:
-  - `gh auth login`
-  - `gh repo create jarvis-2.0 --private --source=. --remote=origin --push`
-  - `gh repo view --web`
 
 ## Próximo passo recomendado
 
-Concluir a autenticação do GitHub CLI com `gh auth login`; depois rodar `gh repo create jarvis-2.0 --private --source=. --remote=origin --push` dentro de `C:\Users\matth\OneDrive\Documentos\VS CODE\Jarvis_2.0`.
+Instalar `dist-installers\android\app-arm64-debug.apk` no Android e testar na mesma rede Wi-Fi do Windows. O backend já está ativo em `http://192.168.0.31:8765/health` e o APK usa `ws://192.168.0.31:8765/service` por padrão.
