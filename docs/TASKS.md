@@ -3056,3 +3056,29 @@ Registrar: URL do repositório GitHub, branch principal, data do push, checklist
 - `cargo check`
 - `npm run tauri -- build`
 - Instalado `JARVIS Voice 0.1.6` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.6`.
+
+---
+
+## TAREFA 49 — [Concluido] Diagnóstico de microfone em tempo real no JARVIS Voice
+
+**Contexto:** Mesmo com seletor de microfone e threshold reduzido, o app não mostrava se o microfone estava captando som. Isso deixava difícil saber se o problema era permissão, dispositivo errado, volume baixo ou wake word abaixo do threshold.
+
+**Resultado:**
+
+- Backend `/service` passou a emitir eventos `mic` com `rms`, `score`, `threshold` e dispositivo durante a escuta do wake word.
+- Sidebar do app ganhou diagnóstico em tempo real com barras de `Volume` e `Wake score`.
+- Android/app mode também atualiza a barra de volume local via `AudioContext`, mantendo a tela inicial limpa.
+- Versão do app elevada para `0.1.7`.
+- Gerados e instalados os builds Windows `0.1.7`:
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.7_x64_en-US.msi`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.7_x64-setup.exe`
+
+**Validações:**
+
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- WebSocket `ws://127.0.0.1:8765/service?inputDevice=1` recebeu evento `mic` com RMS e `threshold: 0.3`.
+- `npm run build`
+- `cargo check`
+- Playwright Chromium confirmou diagnóstico visível na sidebar e ausência de campo de texto/transcrição.
+- `npm run tauri -- build`
+- Instalado `JARVIS Voice 0.1.7` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.7`.

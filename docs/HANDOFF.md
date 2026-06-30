@@ -60,6 +60,10 @@ IA responsável: Codex
 - TAREFA 48 concluída: troca de microfone no select agora salva imediatamente e reinicia a conexão ativa para o backend abrir o novo dispositivo.
 - Versão `0.1.6` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.6`.
 - `scripts\test_wake_word.py` agora aceita `--device` para testar o microfone escolhido diretamente.
+- TAREFA 49 concluída: JARVIS Voice ganhou diagnóstico de microfone em tempo real na sidebar.
+- Backend `/service` emite eventos `mic` com volume RMS, wake score, threshold e dispositivo durante a escuta.
+- Android/app mode atualiza o volume local via `AudioContext`, sem voltar a mostrar transcrição ou campo de mensagem.
+- Versão `0.1.7` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.7`.
 
 ## Arquivos alterados
 
@@ -101,6 +105,8 @@ IA responsável: Codex
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.5_x64-setup.exe`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64_en-US.msi`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64-setup.exe`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.7_x64_en-US.msi`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.7_x64-setup.exe`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -201,6 +207,13 @@ IA responsável: Codex
 - `cargo check` em `jarvis-voice-app/src-tauri`.
 - `npm run tauri -- build` gerou instaladores Windows `0.1.6`.
 - Instalado `JARVIS Voice 0.1.6` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.6`.
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- WebSocket `ws://127.0.0.1:8765/service?inputDevice=1` recebeu evento `mic` com RMS e `threshold: 0.3`.
+- `npm run build` em `jarvis-voice-app`
+- `cargo check` em `jarvis-voice-app/src-tauri`
+- Playwright Chromium confirmou diagnóstico de microfone visível na sidebar e nenhum campo de texto/transcrição.
+- `npm run tauri -- build` gerou instaladores Windows `0.1.7`.
+- Instalado `JARVIS Voice 0.1.7` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.7`.
 
 ## Pendências
 
@@ -210,14 +223,14 @@ IA responsável: Codex
 - Se `hey jarvis` ainda não detectar, rodar:
   - `cd "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice"`
   - `.\venv\Scripts\python.exe scripts\test_wake_word.py --device 1 --seconds 20`  # troque 1 pelo microfone selecionado
-  - Se o maior score ficar abaixo de `0.5`, reduzir `WAKE_WORD_THRESHOLD` no `.env`.
+  - Se o maior score ficar abaixo de `0.30`, testar outro microfone ou reduzir `WAKE_WORD_THRESHOLD` no `.env` com cautela.
 - Instalar o APK debug no Android com o celular conectado por USB:
   - `adb install -r "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk"`
 - Se o Android não conectar ao backend via Wi-Fi, rodar PowerShell como Administrador e liberar a porta:
   - `New-NetFirewallRule -DisplayName "JARVIS Voice Backend 8765" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8765 -Profile Private`
 - Alternativa sem Firewall: com celular conectado por USB, rodar `adb reverse tcp:8765 tcp:8765` e trocar a URL no app para `ws://127.0.0.1:8765/service`.
 - Para `npm run tauri -- android build --apk` funcionar sem workaround, habilitar Developer Mode no Windows ou rodar terminal com privilégio de criar symlink
-- Gerar APK Android `0.1.5` após resolver o bloqueio de symlink/Gradle; o APK atual em `dist-installers\android\app-arm64-debug.apk` ainda é anterior ao seletor de microfone.
+- Gerar APK Android `0.1.7` após resolver o bloqueio de symlink/Gradle; o APK atual em `dist-installers\android\app-arm64-debug.apk` ainda é anterior ao seletor de microfone e ao diagnóstico em tempo real.
 - Assinar o APK Android antes de instalar/distribuir fora de teste local
 - Se ainda forem necessárias, reexecutar as skills `proactive-agent` e `evolver` em PowerShell elevado por causa do `EPERM`
 - Encontrar slugs válidos para `sequential-thinking` e `openclaw-soul-plugin`, ou remover essas intenções se o ClawHub atual não publicar pacotes compatíveis
