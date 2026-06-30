@@ -3082,3 +3082,29 @@ Registrar: URL do repositório GitHub, branch principal, data do push, checklist
 - Playwright Chromium confirmou diagnóstico visível na sidebar e ausência de campo de texto/transcrição.
 - `npm run tauri -- build`
 - Instalado `JARVIS Voice 0.1.7` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.7`.
+
+---
+
+## TAREFA 50 — [Concluido] Diagnóstico independente de microfone no serviço de voz
+
+**Contexto:** O diagnóstico da TAREFA 49 ainda dependia do fluxo ativo de escuta ou do microfone do app. No Windows, isso podia continuar mostrando "Sem leitura" quando o usuário estava tentando validar o serviço em background.
+
+**Resultado:**
+
+- Backend ganhou WebSocket `GET /audio/levels`, que abre o microfone via `sounddevice` e envia RMS sem depender do OpenWakeWord.
+- Sidebar do app passou a usar `/audio/levels` quando o modo é `Serviço em background`.
+- No modo `Microfone do app`, a sidebar testa o microfone local assim que abre, antes de clicar em `Iniciar`.
+- Trocar `Modo` agora salva imediatamente, ajusta a URL entre `/service` e `/ws`, atualiza os microfones e reinicia a escuta se necessário.
+- Versão do app elevada para `0.1.8`.
+- Gerados e instalados os builds Windows `0.1.8`:
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.8_x64_en-US.msi`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.8_x64-setup.exe`
+
+**Validações:**
+
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- WebSocket `ws://127.0.0.1:8765/audio/levels?inputDevice=1` recebeu evento `mic` com RMS.
+- `npm run build`
+- `cargo check`
+- `npm run tauri -- build`
+- Instalado `JARVIS Voice 0.1.8` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.8`.

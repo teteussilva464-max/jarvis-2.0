@@ -64,6 +64,10 @@ IA responsável: Codex
 - Backend `/service` emite eventos `mic` com volume RMS, wake score, threshold e dispositivo durante a escuta.
 - Android/app mode atualiza o volume local via `AudioContext`, sem voltar a mostrar transcrição ou campo de mensagem.
 - Versão `0.1.7` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.7`.
+- TAREFA 50 concluída: criado diagnóstico independente `/audio/levels` para medir microfone do serviço em background sem depender do wake word.
+- Sidebar passa a medir o microfone ao abrir, tanto no modo app quanto no modo serviço.
+- Troca de modo agora salva imediatamente e ajusta a URL entre `/service` e `/ws`.
+- Versão `0.1.8` gerada e instalada no Windows; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.8`.
 
 ## Arquivos alterados
 
@@ -107,6 +111,8 @@ IA responsável: Codex
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.6_x64-setup.exe`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.7_x64_en-US.msi`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.7_x64-setup.exe`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.8_x64_en-US.msi`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.8_x64-setup.exe`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -214,6 +220,12 @@ IA responsável: Codex
 - Playwright Chromium confirmou diagnóstico de microfone visível na sidebar e nenhum campo de texto/transcrição.
 - `npm run tauri -- build` gerou instaladores Windows `0.1.7`.
 - Instalado `JARVIS Voice 0.1.7` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.7`.
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- WebSocket `ws://127.0.0.1:8765/audio/levels?inputDevice=1` recebeu evento `mic` com RMS.
+- `npm run build` em `jarvis-voice-app`
+- `cargo check` em `jarvis-voice-app/src-tauri`
+- `npm run tauri -- build` gerou instaladores Windows `0.1.8`.
+- Instalado `JARVIS Voice 0.1.8` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.8`.
 
 ## Pendências
 
@@ -230,7 +242,7 @@ IA responsável: Codex
   - `New-NetFirewallRule -DisplayName "JARVIS Voice Backend 8765" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8765 -Profile Private`
 - Alternativa sem Firewall: com celular conectado por USB, rodar `adb reverse tcp:8765 tcp:8765` e trocar a URL no app para `ws://127.0.0.1:8765/service`.
 - Para `npm run tauri -- android build --apk` funcionar sem workaround, habilitar Developer Mode no Windows ou rodar terminal com privilégio de criar symlink
-- Gerar APK Android `0.1.7` após resolver o bloqueio de symlink/Gradle; o APK atual em `dist-installers\android\app-arm64-debug.apk` ainda é anterior ao seletor de microfone e ao diagnóstico em tempo real.
+- Gerar APK Android `0.1.8` após resolver o bloqueio de symlink/Gradle; o APK atual em `dist-installers\android\app-arm64-debug.apk` ainda é anterior ao seletor de microfone e ao diagnóstico em tempo real.
 - Assinar o APK Android antes de instalar/distribuir fora de teste local
 - Se ainda forem necessárias, reexecutar as skills `proactive-agent` e `evolver` em PowerShell elevado por causa do `EPERM`
 - Encontrar slugs válidos para `sequential-thinking` e `openclaw-soul-plugin`, ou remover essas intenções se o ClawHub atual não publicar pacotes compatíveis

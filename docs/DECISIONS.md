@@ -272,3 +272,11 @@ Pendentes por falha do instalador/registry: `proactive-agent`, `ui-ux-pro-max`, 
 **Motivo:** Quando o wake word não dispara, o usuário precisa saber se o app está recebendo som, qual nível de volume chega ao backend e se o score do OpenWakeWord está perto do threshold. Sem feedback, permissões, dispositivo errado e volume baixo parecem o mesmo problema.
 
 **Decisão:** A partir da versão `0.1.7`, o endpoint `/service` emite telemetria `mic` com RMS, wake score, threshold e dispositivo enquanto aguarda `hey jarvis`. A UI mostra essas leituras somente na sidebar, preservando a tela inicial limpa. No Android/app mode, a UI usa `AudioContext` local para exibir o volume do microfone selecionado.
+
+---
+
+## Diagnóstico independente do ciclo de wake word
+
+**Motivo:** Medir áudio apenas durante o fluxo `/service` ainda depende do OpenWakeWord carregar e do usuário iniciar a escuta. Para diagnosticar permissões, dispositivo errado e backend antigo, o app precisa de uma leitura de volume que funcione ao abrir a sidebar.
+
+**Decisão:** A partir da versão `0.1.8`, o backend expõe `/audio/levels`, um WebSocket exclusivo para medir RMS do microfone selecionado via `sounddevice`. A sidebar usa esse canal no modo `Serviço em background`. No modo `Microfone do app`, a sidebar abre uma prévia local via `getUserMedia` somente enquanto está visível.
