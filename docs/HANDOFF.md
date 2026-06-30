@@ -48,6 +48,11 @@ IA responsável: Codex
 - Gerado APK x86_64 para emulador em `..\jarvis-voice\jarvis-voice-app\dist-installers\android-emulator\app-x86_64-debug.apk`.
 - Criado script `..\jarvis-voice\jarvis-voice-app\scripts\run-android-emulator.ps1` e atalhos `npm run android:emulator` / `npm run android:emulator:build`.
 - Fluxo validado: emulador abriu, APK instalou, app iniciou e conectou no backend local (`Escutando / Pode falar`).
+- TAREFA 46 concluída: corrigida captura de microfone no desktop e diagnóstico de wake word.
+- `VOICE_INPUT_DEVICE=5` configurado no `..\jarvis-voice\.env` porque o microfone padrão do Windows não era o melhor dispositivo para OpenWakeWord em `16 kHz/int16`.
+- Criados scripts `..\jarvis-voice\scripts\diagnose_microphone.py` e `..\jarvis-voice\scripts\test_wake_word.py`.
+- Android/app mode ficou mais sensível para fala e erros de microfone/permissão agora aparecem na tela principal.
+- Versão `0.1.4` gerada e instalada no Windows; APKs Android arm64/x86_64 atualizados.
 
 ## Arquivos alterados
 
@@ -81,6 +86,10 @@ IA responsável: Codex
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\android-emulator\app-x86_64-debug.apk`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-emulator-connected.png`
 - `..\jarvis-voice\jarvis-voice-app\scripts\run-android-emulator.ps1`
+- `..\jarvis-voice\scripts\diagnose_microphone.py`
+- `..\jarvis-voice\scripts\test_wake_word.py`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.4_x64_en-US.msi`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.4_x64-setup.exe`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -157,12 +166,26 @@ IA responsável: Codex
 - `powershell -ExecutionPolicy Bypass -File .\scripts\run-android-emulator.ps1` abriu o emulador, instalou o APK e iniciou o app.
 - Screenshot `jarvis-voice-emulator-connected.png` confirmou estado `Escutando / Pode falar`.
 - `npm run build` em `jarvis-voice-app` passou após adicionar scripts no `package.json`.
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- `scripts\diagnose_microphone.py --seconds 1` confirmou microfones disponíveis e revelou que o dispositivo padrão não era o melhor para wake word.
+- Teste em `16 kHz/int16` confirmou que `VOICE_INPUT_DEVICE=5` abre corretamente com sinal.
+- `listen_for_wake_word` abriu sem erro com `VOICE_INPUT_DEVICE=5`.
+- `npm run build` em `jarvis-voice-app`
+- `cargo check` em `jarvis-voice-app/src-tauri`
+- `npm run tauri -- build` gerou instaladores Windows `0.1.4`.
+- Instalado `JARVIS Voice 0.1.4` via NSIS; `%LOCALAPPDATA%\JARVIS Voice\jarvis-voice-app.exe` confirmou versão `0.1.4`.
+- `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug` gerou APK arm64 `0.1.4`.
+- `npm run android:emulator:build` atualizou o APK x86_64 do emulador.
 
 ## Pendências
 
 - Criar webhook no canal Discord desejado e preencher `DISCORD_VOICE_WEBHOOK_URL` em `jarvis-voice/.env`. O link `https://discord.gg/wZvxeR2f` é convite, não webhook.
 - Testar manualmente wake word com microfone real: `venv\Scripts\python server.py`, abrir app e falar "JARVIS"
 - Testar manualmente wake word com microfone real no app instalado: abrir `JARVIS Voice`, clicar em "Iniciar Serviço" se necessário e falar "JARVIS".
+- Se `hey jarvis` ainda não detectar, rodar:
+  - `cd "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice"`
+  - `.\venv\Scripts\python.exe scripts\test_wake_word.py --seconds 20`
+  - Se o maior score ficar abaixo de `0.5`, reduzir `WAKE_WORD_THRESHOLD` no `.env`.
 - Instalar o APK debug no Android com o celular conectado por USB:
   - `adb install -r "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk"`
 - Se o Android não conectar ao backend via Wi-Fi, rodar PowerShell como Administrador e liberar a porta:

@@ -248,3 +248,11 @@ Pendentes por falha do instalador/registry: `proactive-agent`, `ui-ux-pro-max`, 
 **Motivo:** Reinstalar APK no celular físico a cada ajuste deixa o ciclo de teste lento. O Android Emulator permite testar layout, permissões, instalação e conexão WebSocket direto no Windows.
 
 **Decisão:** Manter o AVD `JarvisVoiceApi35` com imagem `system-images;android-35;google_apis;x86_64`. Para esse fluxo, gerar APK `x86_64` separado em `dist-installers/android-emulator/` e usar `10.0.2.2:8765` como endereço do backend Windows visto pelo emulador. O comando padrão fica `npm run android:emulator`; quando precisar rebuildar antes de instalar, usar `npm run android:emulator:build`.
+
+---
+
+## Microfone desktop do JARVIS Voice deve ser configurável
+
+**Motivo:** O backend desktop usa `sounddevice` e OpenWakeWord em `16 kHz/int16`. O microfone padrão do Windows pode captar pouco sinal ou nem abrir nesse formato, mesmo aparecendo como dispositivo válido. Isso fez o app desktop ficar em standby e não reconhecer `hey jarvis`.
+
+**Decisão:** O backend `jarvis-voice` passa a aceitar `VOICE_INPUT_DEVICE` no `.env`, por índice ou nome. No ambiente atual, o dispositivo compatível escolhido foi `VOICE_INPUT_DEVICE=5` (`Driver de captura de som primário`). Diagnóstico deve ser feito com `scripts/diagnose_microphone.py`; calibração da wake word com `scripts/test_wake_word.py`.

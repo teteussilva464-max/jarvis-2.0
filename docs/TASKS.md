@@ -2963,3 +2963,32 @@ Registrar: URL do repositório GitHub, branch principal, data do push, checklist
 - Script abriu o emulador, instalou o APK e iniciou `com.matheus.jarvis.voice`.
 - App no emulador conectou no backend local e mostrou `Escutando / Pode falar`.
 - Screenshot validada em `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-emulator-connected.png`.
+
+---
+
+## TAREFA 46 — [Concluido] Corrigir captura de microfone e diagnóstico de wake word
+
+**Contexto:** O app desktop não reconhecia `hey jarvis` e havia suspeita de permissão/captura de microfone no Windows e Android.
+
+**Resultado:**
+
+- Diagnosticado que o backend Python estava usando o microfone padrão incorreto/instável.
+- Adicionada variável `VOICE_INPUT_DEVICE` no `jarvis-voice/.env`.
+- Configurado `VOICE_INPUT_DEVICE=5`, dispositivo compatível com `16 kHz/int16`, formato usado pelo OpenWakeWord.
+- Criado `..\jarvis-voice\scripts\diagnose_microphone.py` para listar e medir microfones no formato real da wake word.
+- Criado `..\jarvis-voice\scripts\test_wake_word.py` para testar score de `hey_jarvis` ao vivo.
+- Android/app mode ficou mais sensível para fala: threshold RMS reduzido e silêncio mínimo aumentado.
+- Erros de permissão/conexão agora aparecem também na tela principal, não apenas na sidebar.
+- Versão do JARVIS Voice elevada para `0.1.4`.
+- Gerados e instalados os builds Windows `0.1.4`; gerados APKs arm64 e x86_64 atualizados.
+
+**Validações:**
+
+- `python -m py_compile pipeline.py server.py scripts\diagnose_microphone.py scripts\test_wake_word.py`
+- `scripts\diagnose_microphone.py` confirmou dispositivos compatíveis; `VOICE_INPUT_DEVICE=5` abre corretamente em `16 kHz/int16`.
+- `listen_for_wake_word` abriu sem erro com `VOICE_INPUT_DEVICE=5`.
+- `npm run build`
+- `cargo check`
+- `npm run tauri -- build`
+- `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug`
+- `npm run android:emulator:build`
