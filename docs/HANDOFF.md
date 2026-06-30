@@ -34,6 +34,14 @@ IA responsável: Codex
 - Repositório GitHub: `https://github.com/teteussilva464-max/jarvis-2.0`
 - Branch principal: `main`
 - Verificado no GitHub: `.env` não está publicada; `prisma/migrations/`, `agent/jarvis.md` e `docs/SETUP.md` estão publicados.
+- TAREFA 44 concluída no projeto irmão `jarvis-voice`: UI do JARVIS Voice simplificada, sem transcrição visível e sem campo de texto.
+- Opções do JARVIS Voice movidas para sidebar oculta no botão de três pontos.
+- Playwright instalado no `jarvis-voice-app` e usado para validar tela inicial/sidebar.
+- Android passou a usar microfone do próprio app via `getUserMedia` + WebSocket `/ws`; desktop mantém backend local via `/service`.
+- Manifest Android atualizado com `RECORD_AUDIO` e `MODIFY_AUDIO_SETTINGS`.
+- Correção de UTF-8 no subprocesso que chama OpenClaw para preservar acentuação em pt-BR.
+- Logs de voz para Discord continuam via `DISCORD_VOICE_WEBHOOK_URL`; convite `discord.gg` não é webhook e é ignorado pelo backend.
+- Versão `0.1.3` gerada para Windows e Android. IP Wi-Fi atual detectado para build/teste Android: `192.168.1.223`.
 
 ## Arquivos alterados
 
@@ -62,6 +70,8 @@ IA responsável: Codex
 - `..\jarvis-voice\jarvis-voice-app\package.json`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-home.png`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-sidebar-final.png`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -115,10 +125,25 @@ IA responsável: Codex
 - `gh repo view --json nameWithOwner,url,visibility,defaultBranchRef` confirmou `PRIVATE`, URL `https://github.com/teteussilva464-max/jarvis-2.0` e default branch `main`.
 - `gh api repos/teteussilva464-max/jarvis-2.0/contents/.env` retornou `404`, confirmando que `.env` não foi publicada.
 - `gh api` confirmou presença de `prisma/migrations/`, `agent/jarvis.md` e `docs/SETUP.md`.
+- `python -m py_compile pipeline.py server.py` em `jarvis-voice`
+- `npm install -D @playwright/test`
+- `npx playwright install chromium`
+- `npm run build` em `jarvis-voice-app`
+- Playwright Chromium validou `hasTranscript=false`, `hasTextForm=false` e sidebar aberta.
+- Capturas geradas em `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\`
+- `cargo check` em `jarvis-voice-app/src-tauri`
+- `npm run tauri -- build` gerou instaladores Windows `0.1.3`:
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.3_x64_en-US.msi`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.3_x64-setup.exe`
+- `npm run tauri -- android build --apk --debug` compilou Rust Android, mas falhou no symlink por falta de Developer Mode no Windows.
+- Workaround aplicado: copiada `libjarvis_voice_app_lib.so` para `src-tauri\gen\android\app\src\main\jniLibs\arm64-v8a\`.
+- `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug` concluiu com sucesso.
+- APK debug `0.1.3` copiado para `..\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk` (123 MB).
+- Manifest Android final confirmou `INTERNET`, `RECORD_AUDIO` e `MODIFY_AUDIO_SETTINGS`; não há permissão de câmera.
 
 ## Pendências
 
-- Criar canal Discord `#voz-log`, criar webhook e preencher `DISCORD_VOICE_WEBHOOK_URL` em `jarvis-voice/.env`
+- Criar webhook no canal Discord desejado e preencher `DISCORD_VOICE_WEBHOOK_URL` em `jarvis-voice/.env`. O link `https://discord.gg/wZvxeR2f` é convite, não webhook.
 - Testar manualmente wake word com microfone real: `venv\Scripts\python server.py`, abrir app e falar "JARVIS"
 - Testar manualmente wake word com microfone real no app instalado: abrir `JARVIS Voice`, clicar em "Iniciar Serviço" se necessário e falar "JARVIS".
 - Instalar o APK debug no Android com o celular conectado por USB:
@@ -134,4 +159,4 @@ IA responsável: Codex
 
 ## Próximo passo recomendado
 
-Instalar `dist-installers\android\app-arm64-debug.apk` no Android e testar na mesma rede Wi-Fi do Windows. O backend já está ativo em `http://192.168.0.31:8765/health` e o APK usa `ws://192.168.0.31:8765/service` por padrão.
+Instalar `dist-installers\android\app-arm64-debug.apk` no Android e testar na mesma rede Wi-Fi do Windows. O APK `0.1.3` foi gerado com URL padrão `ws://192.168.1.223:8765/service`, mas no Android o app converte automaticamente para `/ws` para usar o microfone do próprio aparelho.

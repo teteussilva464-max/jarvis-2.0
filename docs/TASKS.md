@@ -2909,3 +2909,34 @@ Abrir o repositório no browser e verificar:
 Registrar: URL do repositório GitHub, branch principal, data do push, checklist do que foi verificado.
 
 **Motivo:** Sem o projeto no GitHub, qualquer problema no PC do Matheus (formatação, troca de máquina, disco cheio) perde todo o trabalho acumulado nas TARESAs 1–42. O GitHub é o backup e o ponto de restauração para nova máquina.
+
+---
+
+## TAREFA 44 — [Concluido] Limpar UI do JARVIS Voice e corrigir teste Android com microfone
+
+**Contexto:** O app Android não estava capturando voz de forma confiável, a tela mostrava transcrição/campo de mensagem e havia risco de acentuação quebrada nas respostas em português.
+
+**Resultado:**
+
+- Instalado Playwright no `jarvis-voice-app` e geradas capturas de validação visual.
+- UI do JARVIS Voice simplificada: tela inicial limpa, sem histórico/transcrição e sem campo para enviar texto.
+- Opções movidas para uma sidebar oculta no botão de três pontos.
+- Android configurado para capturar áudio pelo microfone do app via `getUserMedia` e WebSocket `/ws`.
+- Manifest Android atualizado com `RECORD_AUDIO` e `MODIFY_AUDIO_SETTINGS`; não foi adicionada permissão de câmera porque o app usa somente áudio.
+- Subprocesso do OpenClaw no backend de voz configurado com UTF-8 para preservar acentos em pt-BR.
+- Envio de logs de transcrição para Discord mantido via `DISCORD_VOICE_WEBHOOK_URL`; convites `discord.gg` são ignorados porque não são webhooks.
+- Versão do app elevada para `0.1.3`.
+- Gerados:
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.3_x64_en-US.msi`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\JARVIS Voice_0.1.3_x64-setup.exe`
+  - `..\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk`
+
+**Validações:**
+
+- `python -m py_compile pipeline.py server.py`
+- `npm run build`
+- `cargo check`
+- Playwright Chromium: confirmou tela inicial sem transcrição/campo de texto e sidebar funcional.
+- `npm run tauri -- build`
+- `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug`
+- Manifest Android final confirmou `INTERNET`, `RECORD_AUDIO` e `MODIFY_AUDIO_SETTINGS`.

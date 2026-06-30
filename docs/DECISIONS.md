@@ -232,3 +232,11 @@ Pendentes por falha do instalador/registry: `proactive-agent`, `ui-ux-pro-max`, 
 **Motivo:** O APK Android não embute o backend Python. No celular, `127.0.0.1` aponta para o próprio Android, não para o Windows; portanto o app móvel precisa alcançar o backend pela rede local ou por `adb reverse`.
 
 **Decisão:** Para teste Android local, o backend `jarvis-voice/server.py` roda no Windows com `VOICE_HOST=0.0.0.0` e o APK debug pode ser gerado com `VITE_JARVIS_VOICE_SERVER_URL=ws://<IP_DO_WINDOWS>:8765/service`. No ambiente atual, o IP detectado foi `192.168.0.31`, usado no APK debug da TAREFA 42. Se o Firewall bloquear acesso pelo celular, liberar TCP `8765` no perfil privado ou usar `adb reverse tcp:8765 tcp:8765` e ajustar a URL no app para `ws://127.0.0.1:8765/service`.
+
+---
+
+## JARVIS Voice Android usa microfone do app via `/ws`
+
+**Motivo:** O endpoint `/service` usa o microfone do backend Windows. Isso funciona no desktop, mas no Android o usuário precisa falar no próprio aparelho. Além disso, a tela do app de voz deve ser limpa, sem histórico de conversa e sem campo de texto.
+
+**Decisão:** A partir da versão `0.1.3`, o desktop mantém o modo serviço em `/service`, enquanto Android/`modo app` usa `getUserMedia({ audio: true })`, `MediaRecorder` e WebSocket `/ws`. O app ignora eventos de transcrição no frontend e mostra apenas estado/animação de voz. Configurações ficam em sidebar oculta no botão de três pontos. Logs de transcrição para Discord usam somente webhook (`DISCORD_VOICE_WEBHOOK_URL`); convites `discord.gg` não são destino válido.
