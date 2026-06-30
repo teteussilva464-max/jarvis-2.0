@@ -2,7 +2,7 @@
 
 ## Última atualização
 
-Data: 2026-06-29
+Data: 2026-06-30
 IA responsável: Codex
 
 ## O que foi feito
@@ -25,12 +25,21 @@ IA responsável: Codex
 - TAREFA 42 concluída: gerado APK Android debug assinado automaticamente pelo Gradle para teste local via ADB.
 - Backend de voz configurado para teste Android na LAN com `VOICE_HOST=0.0.0.0`; Windows está usando IP `192.168.0.31`.
 - APK debug gerado com URL padrão `ws://192.168.0.31:8765/service`, para conectar no backend Windows pela mesma rede Wi-Fi.
+- TAREFA 43 iniciada: projeto `Jarvis_2.0` preparado para GitHub/portabilidade.
+- `.gitignore` revisado para excluir `.env`, dependências, builds e logs, preservando `prisma/migrations/`.
+- `.env.example` atualizado com variáveis atuais do projeto, sem segredos reais.
+- `docs/SETUP.md` refeito com setup em nova máquina, Docker, Prisma, OpenClaw e JARVIS Voice.
+- Git inicializado localmente, branch renomeada para `main` e commit inicial criado.
+- GitHub CLI instalado via `winget`, mas criação/push do repositório remoto ficou bloqueada porque `gh` ainda não está autenticado.
 
 ## Arquivos alterados
 
 - `docs/DECISIONS.md`
 - `docs/HANDOFF.md`
 - `docs/TASKS.md`
+- `docs/SETUP.md`
+- `.gitignore`
+- `.env.example`
 - `agent/jarvis.md`
 - `agent/jarvis-search.md`
 - `skills/jarvis-shell/skill.md`
@@ -91,6 +100,14 @@ IA responsável: Codex
 - Backend reiniciado com `.env` e `VOICE_HOST=0.0.0.0`; `Get-NetTCPConnection` confirmou `0.0.0.0:8765` em `Listen`.
 - `Invoke-RestMethod http://192.168.0.31:8765/health` respondeu `{"ok":"true","service":"jarvis-voice"}`.
 - Tentativa de criar regra de Firewall TCP `8765` falhou com `Acesso negado` por falta de sessão elevada.
+- `npm run lint` passou após atualização de setup.
+- `git init`
+- `git check-ignore -v .env dist node_modules` confirmou que segredos/builds estão ignorados.
+- `git add .` confirmou que `.env`, `dist/` e `node_modules/` não entraram no stage.
+- `git commit -m "feat: JARVIS 2.0 — assistente pessoal autônomo (OpenClaw + API REST)"` criou o commit local `f20f108`.
+- `git branch -M main` definiu a branch principal local.
+- `winget install --id GitHub.cli -e --source winget --accept-package-agreements --accept-source-agreements` instalou `gh 2.95.0`.
+- `gh auth status` retornou que não há login GitHub ativo.
 
 ## Pendências
 
@@ -107,7 +124,11 @@ IA responsável: Codex
 - Se ainda forem necessárias, reexecutar as skills `proactive-agent` e `evolver` em PowerShell elevado por causa do `EPERM`
 - Encontrar slugs válidos para `sequential-thinking` e `openclaw-soul-plugin`, ou remover essas intenções se o ClawHub atual não publicar pacotes compatíveis
 - Testar TuyaClaw com dispositivos Tuya Smart
+- Autenticar GitHub CLI e concluir push remoto da TAREFA 43:
+  - `gh auth login`
+  - `gh repo create jarvis-2.0 --private --source=. --remote=origin --push`
+  - `gh repo view --web`
 
 ## Próximo passo recomendado
 
-Instalar `dist-installers\android\app-arm64-debug.apk` no Android e testar na mesma rede Wi-Fi do Windows. O backend já está ativo em `http://192.168.0.31:8765/health` e o APK usa `ws://192.168.0.31:8765/service` por padrão.
+Concluir a autenticação do GitHub CLI com `gh auth login`; depois rodar `gh repo create jarvis-2.0 --private --source=. --remote=origin --push` dentro de `C:\Users\matth\OneDrive\Documentos\VS CODE\Jarvis_2.0`.
