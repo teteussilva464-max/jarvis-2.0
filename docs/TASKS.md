@@ -2940,3 +2940,26 @@ Registrar: URL do repositório GitHub, branch principal, data do push, checklist
 - `npm run tauri -- build`
 - `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug`
 - Manifest Android final confirmou `INTERNET`, `RECORD_AUDIO` e `MODIFY_AUDIO_SETTINGS`.
+
+---
+
+## TAREFA 45 — [Concluido] Ambiente de teste Android local via emulador
+
+**Contexto:** Instalar o APK no celular a cada ajuste estava atrasando os testes do JARVIS Voice.
+
+**Resultado:**
+
+- Instalado pacote `emulator` do Android SDK.
+- Instalada imagem `system-images;android-35;google_apis;x86_64`.
+- Criado AVD `JarvisVoiceApi35`.
+- Gerado APK x86_64 para emulador apontando para `ws://10.0.2.2:8765/service`.
+- Criado script `..\jarvis-voice\jarvis-voice-app\scripts\run-android-emulator.ps1`.
+- Adicionados atalhos:
+  - `npm run android:emulator`
+  - `npm run android:emulator:build`
+
+**Validações:**
+
+- Script abriu o emulador, instalou o APK e iniciou `com.matheus.jarvis.voice`.
+- App no emulador conectou no backend local e mostrou `Escutando / Pode falar`.
+- Screenshot validada em `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-emulator-connected.png`.

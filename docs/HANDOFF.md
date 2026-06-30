@@ -42,6 +42,12 @@ IA responsável: Codex
 - Correção de UTF-8 no subprocesso que chama OpenClaw para preservar acentuação em pt-BR.
 - Logs de voz para Discord continuam via `DISCORD_VOICE_WEBHOOK_URL`; convite `discord.gg` não é webhook e é ignorado pelo backend.
 - Versão `0.1.3` gerada para Windows e Android. IP Wi-Fi atual detectado para build/teste Android: `192.168.1.223`.
+- TAREFA 45 concluída: ambiente de teste Android local via emulador configurado.
+- Android SDK recebeu o pacote `emulator` e a imagem `system-images;android-35;google_apis;x86_64`.
+- Criado AVD `JarvisVoiceApi35`.
+- Gerado APK x86_64 para emulador em `..\jarvis-voice\jarvis-voice-app\dist-installers\android-emulator\app-x86_64-debug.apk`.
+- Criado script `..\jarvis-voice\jarvis-voice-app\scripts\run-android-emulator.ps1` e atalhos `npm run android:emulator` / `npm run android:emulator:build`.
+- Fluxo validado: emulador abriu, APK instalou, app iniciou e conectou no backend local (`Escutando / Pode falar`).
 
 ## Arquivos alterados
 
@@ -72,6 +78,9 @@ IA responsável: Codex
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-home.png`
 - `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-sidebar-final.png`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\android-emulator\app-x86_64-debug.apk`
+- `..\jarvis-voice\jarvis-voice-app\dist-installers\screenshots\jarvis-voice-emulator-connected.png`
+- `..\jarvis-voice\jarvis-voice-app\scripts\run-android-emulator.ps1`
 - `%USERPROFILE%\.openclaw\openclaw.json`
 
 ## Validações executadas
@@ -140,6 +149,14 @@ IA responsável: Codex
 - `gradlew.bat assembleArm64Debug -x rustBuildArm64Debug` concluiu com sucesso.
 - APK debug `0.1.3` copiado para `..\jarvis-voice\jarvis-voice-app\dist-installers\android\app-arm64-debug.apk` (123 MB).
 - Manifest Android final confirmou `INTERNET`, `RECORD_AUDIO` e `MODIFY_AUDIO_SETTINGS`; não há permissão de câmera.
+- `sdkmanager --install "emulator" "system-images;android-35;google_apis;x86_64" "platforms;android-35" "platform-tools"`
+- `avdmanager create avd --force --name JarvisVoiceApi35 --package "system-images;android-35;google_apis;x86_64" --device "pixel_5"`
+- `npm run tauri -- android build --apk --debug --target x86_64` compilou Rust Android, mas falhou no symlink por falta de Developer Mode no Windows.
+- Workaround aplicado: copiada `libjarvis_voice_app_lib.so` x86_64 para `src-tauri\gen\android\app\src\main\jniLibs\x86_64\`.
+- `gradlew.bat assembleX86_64Debug -x rustBuildX86_64Debug` concluiu com sucesso.
+- `powershell -ExecutionPolicy Bypass -File .\scripts\run-android-emulator.ps1` abriu o emulador, instalou o APK e iniciou o app.
+- Screenshot `jarvis-voice-emulator-connected.png` confirmou estado `Escutando / Pode falar`.
+- `npm run build` em `jarvis-voice-app` passou após adicionar scripts no `package.json`.
 
 ## Pendências
 
@@ -159,4 +176,15 @@ IA responsável: Codex
 
 ## Próximo passo recomendado
 
-Instalar `dist-installers\android\app-arm64-debug.apk` no Android e testar na mesma rede Wi-Fi do Windows. O APK `0.1.3` foi gerado com URL padrão `ws://192.168.1.223:8765/service`, mas no Android o app converte automaticamente para `/ws` para usar o microfone do próprio aparelho.
+Para testar Android sem celular físico, usar:
+
+```powershell
+cd "C:\Users\matth\OneDrive\Documentos\VS CODE\jarvis-voice\jarvis-voice-app"
+npm run android:emulator
+```
+
+Quando alterar código e quiser rebuildar antes de instalar no emulador:
+
+```powershell
+npm run android:emulator:build
+```

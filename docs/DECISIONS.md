@@ -240,3 +240,11 @@ Pendentes por falha do instalador/registry: `proactive-agent`, `ui-ux-pro-max`, 
 **Motivo:** O endpoint `/service` usa o microfone do backend Windows. Isso funciona no desktop, mas no Android o usuário precisa falar no próprio aparelho. Além disso, a tela do app de voz deve ser limpa, sem histórico de conversa e sem campo de texto.
 
 **Decisão:** A partir da versão `0.1.3`, o desktop mantém o modo serviço em `/service`, enquanto Android/`modo app` usa `getUserMedia({ audio: true })`, `MediaRecorder` e WebSocket `/ws`. O app ignora eventos de transcrição no frontend e mostra apenas estado/animação de voz. Configurações ficam em sidebar oculta no botão de três pontos. Logs de transcrição para Discord usam somente webhook (`DISCORD_VOICE_WEBHOOK_URL`); convites `discord.gg` não são destino válido.
+
+---
+
+## Teste Android do JARVIS Voice via emulador local
+
+**Motivo:** Reinstalar APK no celular físico a cada ajuste deixa o ciclo de teste lento. O Android Emulator permite testar layout, permissões, instalação e conexão WebSocket direto no Windows.
+
+**Decisão:** Manter o AVD `JarvisVoiceApi35` com imagem `system-images;android-35;google_apis;x86_64`. Para esse fluxo, gerar APK `x86_64` separado em `dist-installers/android-emulator/` e usar `10.0.2.2:8765` como endereço do backend Windows visto pelo emulador. O comando padrão fica `npm run android:emulator`; quando precisar rebuildar antes de instalar, usar `npm run android:emulator:build`.
